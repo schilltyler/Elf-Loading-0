@@ -45,6 +45,52 @@ int main(int argc, char **argv) {
   }
 
     // Your solution here!
+    uintptr_t address = parse_hex_address(argv[1]);
+
+    if (address == 0) {
+        return -1;
+    }
+
+    Elf64_Ehdr *hdr = (Elf64_Ehdr *)address;
+
+    // Validate magic bytes
+    if (hdr->e_ident[EI_MAG0] == 0x7f &&
+        hdr->e_ident[EI_MAG1] == 'E' &&
+        hdr->e_ident[EI_MAG2] == 'L' &&
+        hdr->e_ident[EI_MAG3] == 'F') {
+        mini_printf("Valid ELF magic bytes\n");
+    }
+    else {
+        mini_printf("Invalid ELF magic bytes\n");
+        return -1;
+    }
+
+    // Validate class
+    if (hdr->e_ident[EI_CLASS] == ELFCLASS64) {
+        mini_printf("Valid ELF class\n");
+    }
+    else {
+        mini_printf("Invalid ELF class\n");
+        return -1;
+    }
+
+    // Validate little-endian encoding
+    if (hdr->e_ident[EI_DATA] == ELFDATA2LSB) {
+        mini_printf("Little endian\n");
+    }
+    else {
+        mini_printf("Not little endian\n");
+        return -1;
+    }
+
+    // Validate AARCH64
+    if (hdr->e_ident[EI_OSABI] == ELFOSABI_ARM) {
+        mini_printf("AArch64\n");
+    }
+    else {
+        mini_printf("Not AArch64\n");
+        return -1;
+    }
 
   return 0;
 }
